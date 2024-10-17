@@ -1,0 +1,359 @@
+ CREATETABLEAirlines (
+ Airline_ID INT NOT NULL ,
+ Name VARCHAR(100) NOT NULL,
+ IATA_CODE VARCHAR(3),
+ ICAO_CODE VARCHAR(4) NOTNULL,
+ Country VARCHAR(100) NOT NULL,
+ Headquarters VARCHAR(100) DEFAULT ‘Unknown’,
+ Flight_ID INT,
+ CONSTRAINT PK_Airlines PRIMARY KEY (Airline_ID)
+ CONSTRAINT FK_FliAirID FOREIGN KEY (Flight_ID) REFERENCES Flight(Flight_ID)
+ );
+ CREATETABLEPlane (
+ Plane_ID INT NOT NULL,
+ Registration_Number INT NOT NULL,
+ Model VARCHAR(50) DEFAULT ‘Unknown’,
+ Seating_Capacity INT NOT NULL,
+ Fuel_Capacity INT NOT NULL,
+ Airline_ID INT,
+ CONSTRAINT PK_Plane PRIMARY KEY(Plane_ID),
+ CONSTRAINT FK_PlaAirID FOREIGN KEY (Airline_ID) REFERENCES
+ Airlines(Airline_ID)
+ );
+ CREATETABLEAirport (
+ Airport_ID INT PRIMARY KEY,
+ Name VARCHAR(100) NOT NULL,
+ City VARCHAR(100) NOT NULL,
+ Country VARCHAR(100) DEFAULT ‘Unknown’,
+ Number_Of_Gates INT NOT NULL,
+ Number_Of_Terminals INT NOT NULL,
+ AAirport_ID INT,
+ DAirport_ID INT,
+ CONSTRAINT FK_AAAirID FOREIGN KEY(AAirport_ID) REFERENCES
+ ArrivalAirport(AAirport_ID)
+ CONSTRAINT FK_DAAirID FOREIGN KEY(DAirport_ID) REFERENCES
+ DepartureAirport(DAirport_ID)
+ );
+ CREATETABLEArrivalAirport(
+ AAirport_ID INT PRIMARY KEY,
+ Bagge_Claim_Area VARCHAR(100),
+Ground_Transportation VARCHAR(50) DEFAULT ‘Unknown’,
+ Arrival_Lounge boolean NOT NULL--True: included/False: Not included
+ );
+ CREATETABLEDepartureAirport(
+ DAirport_ID INT PRIMARY KEY,
+ CheckIn_Area VARCHAR(100) DEFAULT ‘Unknown’,
+ Security_CheckPoints VARCHAR(100) NOT NULL,
+ Departure_Lounge boolean
+ );
+ CREATETABLEEmployee(
+ Employee_ID INT NOT NULL,
+ First_Name VARCHAR(50) NOT NULL,
+ Last_Name VARCHAR(50) NOT NULL,
+ Role VARCHAR(50) DEFAULT ‘Unknown’,
+ Certification VARCHAR(100) NOT NULL,
+ Pilot_ID INT,
+ Attendant_ID INT,
+ FirstOfficer_ID INT,
+ CONSTRAINT PK_Employee PRIMARY KEY(Employee_ID)
+ CONSTRAINT FK_PEFOREIGNKEY(Pilot_ID) REFERENCES E_Pilot(Pilot_ID)
+ CONSTRAINT FK_AEFOREIGNKEY(Attendant_ID) REFERENCES
+ E_Attendant(Attendant_ID)
+ CONSTRAINT FK_FOEFOREIGNKEY(FirstOfficer_ID) REFERENCES
+ E_FirstOfficer(FirstOfficer_ID)
+ );
+ CREATETABLEE_Pilot(
+ Pilot_ID INT NOT NULL,
+ Experience INT,
+ CONSTRAINT PK_E_Pilot PRIMARY KEY (Pilot_ID)
+ );
+ CREATETABLEE_Attendant(
+ Attendant_ID INT NOT NULL,
+ Service_Responsibility varchar(50),
+ CONSTRAINT PK_E_Attendant PRIMARY KEY (Attendant_ID)
+ );
+ CREATETABLEE_FirstOfficer (
+ FirstOfficer_ID INT NOT NULL,
+ Assistive_Responsibility varchar(50),
+ CONSTRAINT PK_E_FirstOfficer PRIMARY KEY (FirstOfficer_ID)
+ );
+CREATETABLEFlight (
+ Flight_ID INT NOT NULL,
+ Flight_Number INT NOT NULL,
+ Departure_Time TIME NOT NULL,
+ Arrival_Time TIME NOT NULL,
+ Duration NUMERIC(10, 2) NOT NULL,
+ Status VARCHAR(50) DEFAULT ‘Unknown’,
+ Ref_Flight_ID INT,
+ Airport_ID INT NOT NULL,
+ Airline_ID INT NOT NULL,
+ Employee_ID INT NOT NULL,
+ CONSTRAINT PK_Flight PRIMARY KEY (Flight_ID),
+ CONSTRAINT FK_FliRefFli FOREIGN KEY (Ref_Flight_ID) REFERENCES
+ Flight(Flight_ID),
+ CONSTRAINT FK_FliAirport FOREIGN KEY (Airport_ID) REFERENCES
+ Airport(Airport_ID),
+ CONSTRAINT FK_FliAirline FOREIGN KEY (Airline_ID) REFERENCES
+ Airlines(Airline_ID),
+ CONSTRAINT FK_FliEmp FOREIGN KEY(Employee_ID) REFERENCES
+ Employee(Employee_ID)
+ );
+ CREATETABLEPassenger (
+ Passenger_ID INTEGER NOT NULL,
+ First_Name VARCHAR(50) NOT NULL,
+ Last_Name VARCHAR(50) NOT NULL,
+ Email_Address VARCHAR(100) DEFAULT ‘Unknown’,
+ Mobile_Number VARCHAR(20) NOT NULL,
+ Flight_ID INT,
+ CONSTRAINT PK_Passenger PRIMARY KEY (Passenger_ID),
+ CONSTRAINT FK_PassFli FOREIGN KEY (Flight_ID) REFERENCES Flight(Flight_ID)
+ );
+ CREATETABLECustomerPreference(
+ Customer_Preference VARCHAR(50) NOT NULL,
+ Passenger_ID INT NOT NULL,
+ PRIMARYKEY(Customer_Preference, Passenger_ID)
+ );
+ CREATETABLEReservation (
+ Reservation_ID INT NOT NULL,
+ Date DATE NOTNULL,
+ Status VARCHAR(20) DEFAULT ‘Unknown’,
+Check_in_Methods VARCHAR(100) NOT NULL,
+ Payment_methods VARCHAR(100) NOT NULL,
+ Passenger_ID INT,
+ CONSTRAINT PK_Reservation PRIMARY KEY (Reservation_ID),
+ CONSTRAINT FK_ResPas FOREIGN KEY (Passenger_ID) REFERENCES
+ Passenger(Passenger_ID)
+ );
+ CREATETABLETicket (
+ Ticket_ID INT NOT NULL,
+ Issue_Date DATE NOT NULL,
+ Price DECIMAL(10, 2) NOT NULL DEFAULT 0,
+ Type VARCHAR(50) NOT NULL,
+ Reservation_ID INT,
+ CONSTRAINT PK_Ticket PRIMARY KEY (Ticket_ID),
+ CONSTRAINT FK_TicRes FOREIGN KEY (Reservation_ID) REFERENCES
+ Reservation(Reservation_ID)
+ );
+ CREATETABLESeat(
+ Seating_ID INT NOT NULL,
+ Seat_Number INT DEFAULT 0,
+ Ticket_ID INT,
+ CONSTRAINT PK_Seat PRIMARY KEY(Seating_ID),
+ CONSTRAINT FK_SeaT_Ticket FOREIGN KEY (Ticket_ID) REFERENCES
+ Ticket(Ticket_ID)
+ );
+ CREATETABLECheck_In_Luggage (
+ Luggage_ID INT NOT NULL,
+ Weight DECIMAL(10, 2) NOT NULL,
+ Size VARCHAR(20) NOT NULL,
+ Claim_Status VARCHAR(20) DEFAULT ‘Unknown’,
+ Ticket_ID INT,
+ CONSTRAINT PK_Check_In_Luggage PRIMARY KEY (Luggage_ID),
+ CONSTRAINT FK_CilTic FOREIGN KEY (Ticket_ID) REFERENCES Ticket(Ticket_ID)
+ );
+ Section 5.1: INSERTION
+ INSERT INTO Airlines (Airline_ID, Name, IATA_CODE, ICAO_CODE, Country,
+ Headquarters)
+ VALUES
+ (1, 'EVA Air', 'BR', 'EVA', 'Taiwan', 'Taipei'),
+(2, 'Japan Airlines', 'JL', 'JAL', 'Japan', 'Tokyo'),
+ (3, 'China Airlines', 'CI', 'CAL', 'Taiwan', 'Taipei'),
+ (4, 'American Airlines', 'AA', 'AAL', 'United States', 'Fort Worth, Texas'),
+ (5, 'United Airlines', 'UA', 'UAL', 'United States', 'Chicago, Illinois'),
+ (6, 'Delta Air Lines', 'DL', 'DAL', 'United States', 'Atlanta, Georgia'),
+ (7, 'Air Canada', 'AC', 'ACA', 'Canada', 'Montreal, Quebec'),
+ (8, 'IndiGo', '6E', 'IGO', 'India', 'Gurugram'),
+ (9, 'Korean Air', 'KE', 'KAL', 'South Korea', 'Seoul'),
+ (10, 'Singapore Airlines', 'SQ', 'SIA', 'Singapore', 'Singapore');
+ INSERT INTO Flight(Flight_ID, Flight_Number, Departure_Time, Arrival_Time, Duration,
+ Status, Ref_Flight_ID, Airport_ID, Airline_ID, Employee_ID)
+ VALUES
+ (1, 'BR001', '08:00:00', '10:00:00', 2, 'On Time', NULL, 101, 1,1),
+ (2, 'JL002', '09:00:00', '12:30:00', 3.5, 'Delayed', NULL, 102, 2,2),
+ (3, 'CI003', '10:00:00', '14:00:00', 4, 'On Time', NULL, 103, 3,3),
+ (4, 'AA004', '11:30:00', '15:00:00', 3.5, 'On Time', NULL, 104, 4,4),
+ (5, 'UA005', '12:00:00', '15:30:00', 3.5, 'On Time', NULL, 105, 5,5),
+ (6, 'DL006', '13:00:00', '16:00:00', 3, 'Canceled', NULL, 106, 6,6),
+ (7, 'AC007', '14:00:00', '18:00:00', 4, 'On Time', NULL, 107, 7,7),
+ (8, '6E008', '15:00:00', '18:30:00', 3.5, 'Delayed', NULL, 108, 8,8),
+ (9, 'KE009', '16:00:00', '20:00:00', 4, 'On Time', NULL, 109, 9,9),
+ (10, 'SQ010', '17:00:00', '21:00:00', 4, 'On Time', NULL, 110, 10,10);-- Inserting into ArrivalAirport table
+ INSERT INTO ArrivalAirport (AAirport_ID, Bagge_Claim_Area, Ground_Transportation,
+ Arrival_Lounge)
+ VALUES
+ (101, 'Area A', 'Shuttle, Taxi, Bus', TRUE),-- Taipei
+ (102, 'Area B', 'Taxi, Bus', TRUE),-- Tokyo
+ (103, 'Area C', 'Subway, Taxi, Bus', FALSE),-- Beijing
+(104, 'Area D', 'Shuttle, Taxi, Bus', TRUE),-- Dallas/Fort Worth
+ (105, 'Area E', 'Shuttle, Subway', FALSE),-- Chicago O'Hare
+ (106, 'Area F', 'Taxi, Bus', TRUE),-- Atlanta
+ (107, 'Area G', 'Shuttle, Taxi, Bus', TRUE),-- Toronto Pearson
+ (108, 'Area H', 'Taxi, Auto Rickshaw, Bus', FALSE),-- Delhi
+ (109, 'Area I', 'Shuttle, Subway', TRUE),-- Incheon
+ (110, 'Area J', 'Taxi, Bus', TRUE);-- Singapore Changi-- Inserting into DepartureAirport table
+ INSERT INTO DepartureAirport (DAirport_ID, CheckIn_Area, Security_CheckPoints,
+ Departure_Lounge)
+ VALUES
+ (101, 'Check-in Zone A', 'Checkpoint 1', TRUE),-- Taipei
+ (102, 'Check-in Zone B', 'Checkpoint 2', FALSE),-- Tokyo
+ (103, 'Check-in Zone C', 'Checkpoint 3', TRUE),-- Beijing
+ (104, 'Check-in Zone D', 'Checkpoint 4', TRUE),-- Dallas/Fort Worth
+ (105, 'Check-in Zone E', 'Checkpoint 5', FALSE),-- Chicago O'Hare
+ (106, 'Check-in Zone F', 'Checkpoint 6', TRUE),-- Atlanta
+ (107, 'Check-in Zone G', 'Checkpoint 7', TRUE),-- Toronto Pearson
+ (108, 'Check-in Zone H', 'Checkpoint 8', TRUE),-- Delhi
+ (109, 'Check-in Zone I', 'Checkpoint 9', TRUE),-- Incheon
+ (110, 'Check-in Zone J', 'Checkpoint 10', TRUE);-- Singapore Changi
+ INSERT INTO Airport (Airport_ID, Name, City, Country, Number_Of_Gates,
+ Number_Of_Terminals, AAirport_ID, DAirport_ID)
+ VALUES
+ (101, 'Taipei Taoyuan International Airport', 'Taipei', 'Taiwan', 60, 2, 101, 101),
+ (102, 'Tokyo Haneda Airport', 'Tokyo', 'Japan', 90, 3, 102, 102),
+ (103, 'Beijing Capital International Airport', 'Beijing', 'China', 120, 3, 103, 103),
+ (104, 'Dallas/Fort Worth International Airport', 'Dallas', 'United States', 175, 5, 104, 104),
+ (105, 'Chicago OHare International Airport', 'Chicago', 'United States', 191, 5, 105, 105),
+(106, 'Hartsfield-Jackson Atlanta International Airport', 'Atlanta', 'United States', 207, 7, 106,
+ 106),
+ (107, 'Toronto Pearson International Airport', 'Toronto', 'Canada', 97, 2, 107, 107),
+ (108, 'Indira Gandhi International Airport', 'Delhi', 'India', 78, 3, 108, 108),
+ (109, 'Incheon International Airport', 'Incheon', 'South Korea', 111, 4, 109, 109),
+ (110, 'Singapore Changi Airport', 'Singapore', 'Singapore', 80, 4, 110, 110);
+ INSERT INTO Plane (Plane_ID, Registration_Number, Model, Seating_Capacity,
+ Fuel_Capacity, Airline_ID)
+ VALUES
+ (1, 12345, 'Boeing 737', 180, 26000, 1),-- EVA Air
+ (2, 12346, 'Airbus A320', 180, 24000, 2),-- Japan Airlines
+ (3, 12347, 'Boeing 777', 396, 32000, 3),-- China Airlines
+ (4, 12348, 'Airbus A380', 853, 32000, 4),-- American Airlines
+ (5, 12349, 'Boeing 787', 242, 23000, 5),-- United Airlines
+ (6, 12350, 'Airbus A330', 290, 24000, 6),-- Delta Air Lines
+ (7, 12351, 'Airbus A220', 130, 21000, 7),-- Air Canada
+ (8, 12352, 'ATR 72', 70, 9000, 8),-- IndiGo
+ (9, 12353, 'Boeing 747', 416, 32000, 9),-- Korean Air
+ (10, 12354, 'Boeing 787', 242, 24000, 10);-- Singapore Airlines
+ INSERT INTO E_Pilot (Pilot_ID, Experience)
+ VALUES
+ (1, 10),-- 10 years of experience
+ (2, 5),-- 5 years of experience
+ (3, 8),-- 8 years of experience
+ (4, 15);-- 15 years of experience
+ INSERT INTO E_Attendant (Attendant_ID,Service_Responsibility)
+ VALUES
+ (1,'Cabin Safety'),-- 3 years of experience, references Employee_ID 2
+(2,'Customer Service'),-- 2 years of experience, references Employee_ID 4
+ (3, 'In-flight Services');-- 4 years of experience, references Employee_ID 6
+ INSERT INTO E_FirstOfficer (FirstOfficer_ID,Assistive_Responsibility)
+ VALUES
+ (1, 'Flight Operations'),-- 7 years of experience, references Employee_ID 3
+ (2, 'Co-Pilot Duties');-- 6 years of experience, references Employee_ID 7-- Inserting into Employee table with roles for 10 flights
+ INSERT INTO Employee (Employee_ID, First_Name, Last_Name, Role, Certification,
+ Pilot_ID, Attendant_ID, FirstOfficer_ID)
+ VALUES-- Example insertion for unique and valid employee data
+ (1, 'John', 'Doe', 'Pilot', 'Commercial Pilot License', 1, NULL, NULL),-- Valid "Pilot_ID"
+ (2, 'Jane', 'Smith', 'Flight Attendant', 'Flight Attendant Certificate', NULL, 1, NULL),-- Valid
+ "Attendant_ID"
+ (3, 'Alex', 'Johnson', 'First Officer', 'First Officer License', NULL, NULL, 1),-- Valid
+ "FirstOfficer_ID"
+ (4, 'Mary', 'Brown', 'Flight Attendant', 'Flight Attendant Certificate', NULL, 2, NULL),-
+Unique "Employee_ID"
+ (5, 'Chris', 'Evans', 'Pilot', 'Commercial Pilot License', 2, NULL, NULL),-- Unique and
+ consistent data
+ (6, 'Sophia', 'Williams', 'Flight Attendant', 'Flight Attendant Certificate', NULL, 3, NULL),-
+Example insertion
+ (7, 'Emily', 'Davis', 'Pilot', 'Airline Transport Pilot License', 3, NULL, NULL),-- Unique
+ `Employee_ID`, references `Pilot_ID` 3
+ (8, 'Michael', 'Jones', 'Flight Attendant', 'Advanced Flight Attendant Certificate', NULL, 2,
+ NULL),-- References `Attendant_ID` 2
+ (9, 'Olivia', 'Brown', 'First Officer', 'First Officer License', NULL, NULL, 2),-- References
+ `FirstOfficer_ID` 2
+(10, 'David', 'Taylor', 'Pilot', 'Commercial Pilot License', 4, NULL, NULL);-- References
+ `Pilot_ID` 4
+ INSERT INTO Passenger (Passenger_ID, First_Name, Last_Name, Email_Address,
+ Mobile_Number, Flight_ID)
+ VALUES
+ (1, 'Alice', 'Johnson', 'alice.johnson@example.com', '123-456-7890', 1),-- Passenger for Flight 1
+ (BR001)
+ (2, 'Bob', 'Smith', 'bob.smith@example.com', '234-567-8901', 2),-- Passenger for Flight 2
+ (JL002)
+ (3, 'Charlie', 'Brown', 'charlie.brown@example.com', '345-678-9012', 3),-- Passenger for Flight
+ 3 (CI003)
+ (4, 'Diana', 'Jones', 'diana.jones@example.com', '456-789-0123', 4),-- Passenger for Flight 4
+ (AA004)
+ (5, 'Edward', 'Williams', 'edward.williams@example.com', '567-890-1234', 5),-- Passenger for
+ Flight 5 (UA005)
+ (6, 'Fiona', 'Davis', 'fiona.davis@example.com', '678-901-2345', 6),-- Passenger for Flight 6
+ (DL006)
+ (7, 'George', 'Garcia', 'george.garcia@example.com', '789-012-3456', 7),-- Passenger for Flight
+ 7 (AC007)
+ (8, 'Helen', 'Martinez', 'helen.martinez@example.com', '890-123-4567', 8),-- Passenger for
+ Flight 8 (6E008)
+ (9, 'Ivan', 'Rodriguez', 'ivan.rodriguez@example.com', '901-234-5678', 9),-- Passenger for
+ Flight 9 (KE009)
+ (10, 'Julia', 'Taylor', 'julia.taylor@example.com', '012-345-6789', 10);-- Passenger for Flight 10
+ (SQ010)-- Inserting into CustomerPreference
+ INSERT INTO CustomerPreference (Customer_Preference, Passenger_ID)
+ VALUES
+ ('Aisle Seat', 1),-- Alice Johnson prefers an aisle seat (Passenger_ID 1)
+('Vegetarian Meal', 2),-- Bob Smith prefers vegetarian meals (Passenger_ID 2)
+ ('Window Seat', 3),-- Charlie Brown prefers a window seat (Passenger_ID 3)
+ ('Extra Legroom', 4),-- Diana Jones prefers extra legroom (Passenger_ID 4)
+ ('Low-Fat Meal', 5),-- Edward Williams prefers low-fat meals (Passenger_ID 5)
+ ('Window Seat', 6),-- Fiona Davis prefers a window seat (Passenger_ID 6)
+ ('Aisle Seat', 7),-- George Garcia prefers an aisle seat (Passenger_ID 7)
+ ('No Nuts', 8),-- Helen Martinez has a nut allergy (Passenger_ID 8)
+ ('Extra Legroom', 9),-- Ivan Rodriguez prefers extra legroom (Passenger_ID 9)
+ ('Vegetarian Meal', 10);-- Julia Taylor prefers vegetarian meals (Passenger_ID 10)
+ INSERT INTO Reservation (Reservation_ID, Date, Status, Check_in_Methods,
+ Payment_methods, Passenger_ID)
+ VALUES
+ (1, '2024-05-10', 'Confirmed', 'Online, Kiosk', 'Credit Card', 1),-- Reservation for Alice Johnson
+ (2, '2024-05-11', 'Confirmed', 'Mobile App', 'PayPal, Credit Card', 2),-- Reservation for Bob
+ Smith
+ (3, '2024-05-12', 'Pending', 'Desk, Kiosk', 'Debit Card', 3),-- Reservation for Charlie Brown
+ (4, '2024-05-13', 'Canceled', 'Desk', 'Cash', 4),-- Reservation for Diana Jones
+ (5, '2024-05-14', 'Confirmed', 'Mobile App, Desk', 'Credit Card, Cash', 5),-- Reservation for
+ Edward Williams
+ (6, '2024-05-15', 'Confirmed', 'Online, Mobile App', 'Credit Card', 6),-- Reservation for Fiona
+ Davis
+ (7, '2024-05-16', 'Confirmed', 'Kiosk', 'Debit Card', 7),-- Reservation for George Garcia
+ (8, '2024-05-17', 'Pending', 'Desk', 'Credit Card', 8),-- Reservation for Helen Martinez
+ (9, '2024-05-18', 'Confirmed', 'Mobile App', 'Credit Card, Cash', 9),-- Reservation for Ivan
+ Rodriguez
+ (10, '2024-05-19', 'Confirmed', 'Online', 'Credit Card, PayPal', 10);-- Reservation for Julia
+ Taylor
+ INSERT INTO Ticket (Ticket_ID, Issue_Date, Price, Type, Reservation_ID)
+ VALUES
+ (1, '2024-05-10', 250.00, 'Economy', 1),-- Ticket for Reservation 1
+ (2, '2024-05-11', 350.00, 'Business', 2),-- Ticket for Reservation 2
+(3, '2024-05-12', 150.00, 'Economy', 3),-- Ticket for Reservation 3
+ (4, '2024-05-13', 400.00, 'First Class', 4),-- Ticket for Reservation 4
+ (5, '2024-05-14', 200.00, 'Economy', 5),-- Ticket for Reservation 5
+ (6, '2024-05-15', 300.00, 'Business', 6),-- Ticket for Reservation 6
+ (7, '2024-05-16', 180.00, 'Economy', 7),-- Ticket for Reservation 7
+ (8, '2024-05-17', 250.00, 'Business', 8),-- Ticket for Reservation 8
+ (9, '2024-05-18', 275.00, 'Economy', 9),-- Ticket for Reservation 9
+ (10, '2024-05-19', 425.00, 'First Class', 10);-- Ticket for Reservation 10
+ INSERT INTO Seat (Seating_ID, Seat_Number, Ticket_ID)
+ VALUES
+ (1, 12, 1),-- Seat for Ticket_ID 1
+ (2, 25, 2),-- Seat for Ticket_ID 2
+ (3, 3, 3),-- Seat for Ticket_ID 3
+ (4, 7, 4),-- Seat for Ticket_ID 4
+ (5, 42, 5),-- Seat for Ticket_ID 5
+ (6, 18, 6),-- Seat for Ticket_ID 6
+ (7, 29, 7),-- Seat for Ticket_ID 7
+ (8, 33, 8),-- Seat for Ticket_ID 8
+ (9, 15, 9),-- Seat for Ticket_ID 9
+ (10, 48, 10);-- Seat for Ticket_ID 10
+ INSERT INTO Check_In_Luggage (Luggage_ID, Weight, Size, Claim_Status, Ticket_ID)
+ VALUES
+ (1, 23.5, 'Medium', 'Not Claimed', 1),-- Luggage for Ticket 1
+ (2, 18.0, 'Small', 'Claimed', 2),-- Luggage for Ticket 2
+ (3, 25.0, 'Large', 'Not Claimed', 3),-- Luggage for Ticket 3
+ (4, 19.5, 'Medium', 'Claimed', 4),-- Luggage for Ticket 4
+ (5, 22.0, 'Medium', 'Not Claimed', 5),-- Luggage for Ticket 5
+ (6, 26.5, 'Large', 'Not Claimed', 6),-- Luggage for Ticket 6
+ (7, 20.0, 'Medium', 'Claimed', 7),-- Luggage for Ticket 7
+ (8, 24.0, 'Medium', 'Not Claimed', 8),-- Luggage for Ticket 8
+ (9, 17.5, 'Small', 'Claimed', 9),-- Luggage for Ticket 9
+(10, 21.0, 'Medium', 'Claimed', 10);-- Luggage for Ticket 10
